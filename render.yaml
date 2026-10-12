@@ -1,0 +1,27 @@
+# Render blueprint for the API (free plan). Connect this repo on render.com and
+# Render will create the service; set the two Turso secrets in the dashboard.
+#
+# The database is Turso (remote libSQL), so the free instance's ephemeral disk
+# is irrelevant — data persists in Turso.
+services:
+  - type: web
+    name: shivmandi-api
+    runtime: node
+    plan: free
+    buildCommand: npm install --prefix server && npm run build --prefix server
+    startCommand: node server/dist/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false

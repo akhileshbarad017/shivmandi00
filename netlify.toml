@@ -1,0 +1,61 @@
+# ---------------------------------------------------------------------------
+# Netlify configuration — Vijay Pandey & Company (Mandi ERP PWA)
+#
+# Why this shape: the app's data lives in a Node/Express + SQLite backend
+# (server/). Netlify is static hosting and has no persistent disk, so it hosts
+# the built frontend (web/dist) and PROXIES /api/* to the running backend.
+# Proxying keeps the API same-origin, so the login session cookie keeps working
+# without any CORS or third-party-cookie setup.
+#
+# Deploy steps
+#   1. Deploy the backend to a free Node host (Render blueprint in render.yaml,
+#      or the Dockerfile on Koyeb/Fly/Railway). Its database is Turso (remote
+#      libSQL), configured with TURSO_DATABASE_URL + TURSO_AUTH_TOKEN.
+#   2. Connect THIS repo to Netlify (it builds web/dist automatically).
+#   3. Replace the host in the /api/* redirect below with the backend URL.
+# ---------------------------------------------------------------------------
+
+[build]
+  command = "npm run build:web"
+  publish = "web/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# 1) Proxy API calls to the running backend. MUST be https and end with a host.
+#    Example: to = "https://mandi-api.example.com/api/:splat"
+[[redirects]]
+  from = "/api/*"
+  to = "https://REPLACE-WITH-YOUR-BACKEND.example.com/api/:splat"
+  status = 200
+  force = true
+
+# 2) SPA fallback so client routes (/parties, /print/S-1001, …) load the app.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Baseline security headers for the static site.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Hashed build assets are immutable; the service worker / manifest must refresh.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"

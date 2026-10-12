@@ -1,0 +1,25 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+# Local database (generated)
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+data/*.db
+
+# Env
+.env
+.env.local
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Test artifacts
+e2e/screenshots/
+e2e/.artifacts/
+test-results/
+playwright-report/

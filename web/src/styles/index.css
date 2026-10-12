@@ -1,0 +1,368 @@
+@import 'tailwindcss';
+
+/* Dark mode is disabled app-wide: the `dark:` variant only applies under a
+   `.dark` ancestor, which is never set, so it can never trigger (even via the
+   OS color-scheme preference). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/* Self-hosted fonts                                                   */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/Inter.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/SpaceGrotesk.woff2') format('woff2');
+}
+
+/* ------------------------------------------------------------------ */
+/* Design tokens                                                       */
+/* ------------------------------------------------------------------ */
+@theme {
+  --font-sans: 'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas,
+    'Liberation Mono', monospace;
+  --font-display: 'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ecff;
+  --color-brand-200: #b6d9ff;
+  --color-brand-300: #84c0ff;
+  --color-brand-400: #4aa3ff;
+  --color-brand-500: #1f86f7;
+  --color-brand-600: #0b6ad6;
+  --color-brand-700: #0a55ab;
+  --color-brand-800: #0d4888;
+  --color-brand-900: #103c70;
+
+  --color-ok: #16a34a;
+  --color-warn: #f59e0b;
+  --color-danger: #ef4444;
+  --color-cyan: #22d3ee;
+
+  --radius-glass: 1.25rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme variables (light default, dark override)                      */
+/* ------------------------------------------------------------------ */
+:root {
+  --bg-1: #eef3fb;
+  --bg-2: #dce8fa;
+  --blob-1: #4aa3ff;
+  --blob-2: #22d3ee;
+  --blob-3: #6366f1;
+  --aurora-1: 24%;
+  --aurora-2: 20%;
+  --aurora-3: 16%;
+
+  --surface: rgba(255, 255, 255, 0.62);
+  --surface-strong: rgba(255, 255, 255, 0.84);
+  --surface-solid: #ffffff;
+  --border: rgba(13, 72, 136, 0.14);
+  --border-strong: rgba(13, 72, 136, 0.24);
+
+  --text: #0b1b33;
+  --muted: #4f6076;
+  --brand: #1f86f7;
+  --brand-strong: #0b6ad6;
+
+  /* Height reserved by the mobile bottom nav (card + its bottom margin + safe area). */
+  --bottom-nav-offset: calc(3.875rem + max(0.75rem, env(safe-area-inset-bottom)));
+  /* Bottom offset for the floating action bar, sitting just above the nav. */
+  --bottom-offset: calc(var(--bottom-nav-offset) + 0.5rem);
+
+  --shadow: 0 18px 40px -18px rgba(11, 27, 51, 0.45);
+  --shadow-soft: 0 8px 24px -14px rgba(11, 27, 51, 0.35);
+
+  color-scheme: light;
+}
+
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background:
+    radial-gradient(1200px 820px at 12% -12%, color-mix(in srgb, var(--blob-1) var(--aurora-1), transparent), transparent 60%),
+    radial-gradient(1000px 700px at 108% 6%, color-mix(in srgb, var(--blob-2) var(--aurora-2), transparent), transparent 55%),
+    radial-gradient(900px 700px at 50% 120%, color-mix(in srgb, var(--blob-3) var(--aurora-3), transparent), transparent 60%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-2));
+  background-attachment: fixed;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Form controls manage their own focus ring (border + ring), so avoid a double outline. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Glass components                                                    */
+/* ------------------------------------------------------------------ */
+.glass {
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.glass-strong {
+  background: var(--surface-strong);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+}
+
+.glass-card {
+  border-radius: var(--radius-glass);
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .glass-card {
+    padding: 1.25rem;
+  }
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, var(--brand), var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Subtle entrance used across the app */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Bill slip (7.5in x 6in)                                             */
+/* ------------------------------------------------------------------ */
+.bill-slip {
+  width: 7.5in;
+  height: 6in;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #111;
+}
+
+.bill-slip table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bill-slip th,
+.bill-slip td {
+  border: 1px solid #111;
+  padding: 2px 5px;
+  vertical-align: top;
+}
+
+.bill-slip__band {
+  background: #000;
+  color: #fff;
+  text-align: center;
+}
+
+/* Scale the fixed-size slip down on screen; print renders it full size. */
+.bill-scale {
+  transform: scale(var(--bill-scale, 1));
+  transform-origin: top left;
+}
+
+/* Right-aligned totals box on the printed bill. */
+.bill-totals {
+  min-width: 3.3in;
+  border: 1px solid #111;
+}
+
+.bill-totals__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 8px;
+  border-bottom: 1px solid #111;
+}
+
+.bill-totals__row:last-child {
+  border-bottom: none;
+}
+
+.bill-totals__row--strong {
+  font-weight: 700;
+  background: #eee;
+}
+
+/* 80mm thermal receipt */
+.thermal-receipt {
+  width: 80mm;
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 4mm;
+  border: 1px solid #111;
+}
+
+.thermal-receipt .t-center {
+  text-align: center;
+}
+.thermal-receipt .t-bold {
+  font-weight: 700;
+}
+.thermal-receipt .t-shop {
+  font-size: 17px;
+  letter-spacing: 0.5px;
+}
+.thermal-receipt .t-icon-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.thermal-receipt .t-contacts {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.thermal-receipt .t-contact {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  line-height: 1.25;
+}
+.thermal-receipt .t-contact__head {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+}
+.thermal-receipt .t-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.thermal-receipt .t-sep {
+  border-top: 1px dashed #000;
+  margin: 5px 0;
+}
+.thermal-receipt .t-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.thermal-receipt .t-table th,
+.thermal-receipt .t-table td {
+  border-bottom: 1px dotted #999;
+  padding: 1px 2px;
+  text-align: left;
+}
+.thermal-receipt .t-table .r {
+  text-align: right;
+}
+.thermal-receipt .t-qr {
+  margin-top: 6px;
+}
+.thermal-receipt .t-footer {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* Print-only copy of the bill: hidden on screen, shown when printing. */
+.bill-print {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Print (invoice / receipt)                                           */
+/* ------------------------------------------------------------------ */
+@media print {
+  @page {
+    size: 7.5in 6in;
+    margin: 0;
+  }
+  html,
+  body {
+    margin: 0 !important;
+    background: #fff !important;
+  }
+  /* Hide the app and any dialog; show only the dedicated print copy. */
+  #root,
+  .modal-root,
+  .no-print {
+    display: none !important;
+  }
+  .bill-print {
+    display: block !important;
+  }
+  .bill-print .bill-slip {
+    border: 1px solid #111;
+  }
+}
