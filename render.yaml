@@ -8,7 +8,9 @@ services:
     name: shivmandi-api
     runtime: node
     plan: free
-    buildCommand: npm install --prefix server && npm run build --prefix server
+    # --include=dev is required: NODE_ENV=production below would otherwise make
+    # npm skip TypeScript, which the build needs.
+    buildCommand: npm install --prefix server --include=dev && npm run build --prefix server
     startCommand: node server/dist/index.js
     healthCheckPath: /api/health
     autoDeploy: true
