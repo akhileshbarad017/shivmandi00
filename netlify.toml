@@ -26,7 +26,7 @@
 #    Example: to = "https://mandi-api.example.com/api/:splat"
 [[redirects]]
   from = "/api/*"
-  to = "https://REPLACE-WITH-YOUR-BACKEND.example.com/api/:splat"
+  to = "https://shivmandi-api.onrender.com/api/:splat"
   status = 200
   force = true
 
